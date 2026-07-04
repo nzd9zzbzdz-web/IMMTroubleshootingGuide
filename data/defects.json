@@ -1,0 +1,337 @@
+{
+  "defects": [
+    {
+      "id": "short_shot",
+      "name": "Short Shot",
+      "category": "Fill & Pack",
+      "description": "Part is incomplete — the melt froze or ran out before the cavity filled. Shows at the far end of flow, thin walls, or behind trapped air.",
+      "quickCheck": ["Is Min Cushion still there, or did it hit zero?", "Is Fill Peak flatlined at the Maximum Filling Pressure limit?", "All cavities short, or just some?"],
+      "causes": [
+        {"rank": 1, "cause": "Not enough material committed before transfer", "fix": "Move V-P transfer later (lower the position number) or increase dose position (shot size)", "settings": ["vp_transfer_position", "dose_position"]},
+        {"rank": 2, "cause": "Pressure-limited fill — machine can't hold set speed", "fix": "Raise Maximum Filling Pressure to restore headroom (10-20% above Fill Peak)", "settings": ["fill_pressure_limit", "fill_velocity"]},
+        {"rank": 3, "cause": "Melt or mold too cold — front freezing off", "fix": "Raise barrel temps and/or mold temp; raise fill velocity so the front runs hotter", "settings": ["barrel_temps", "mold_temp", "fill_velocity"]},
+        {"rank": 4, "cause": "Trapped gas blocking the last-to-fill area", "fix": "Clean vents; try lower clamp force; slow the final fill stage so gas can escape", "settings": ["clamp_force", "fill_velocity"]},
+        {"rank": 5, "cause": "Check ring leaking — melt slipping backward", "fix": "Run Flow-Check / watch cushion repeatability; schedule check-ring service", "settings": ["flow_check"]},
+        {"rank": 6, "cause": "Nozzle or gate partially blocked (cold slug)", "fix": "Raise nozzle temp slightly; verify suck back isn't freezing the tip", "settings": ["nozzle_temp", "pull_back_after_dose"]}
+      ],
+      "diagnosticSteps": ["Confirm cushion exists — zero cushion means shot size / transfer, stop there", "Check Fill Peak vs the pressure limit — if clipped, fix the limit before anything else", "One cavity short in a multi-cavity tool = tool issue (vent/gate), not process", "Only then adjust temperature or speed, one change at a time"]
+    },
+    {
+      "id": "flash",
+      "name": "Flash",
+      "category": "Fill & Pack",
+      "description": "Thin skin of plastic squeezed out at the parting line, vents, or around pins — the mold was forced open or the melt found a gap.",
+      "quickCheck": ["Did All Peak jump above Fill Peak? (transfer spike)", "Is actual clamp force at setpoint?", "New flash on an old mold, or old mold just worn?"],
+      "causes": [
+        {"rank": 1, "cause": "Transfer too late — cavity overfilled on velocity", "fix": "Raise the V-P transfer position (transfer earlier)", "settings": ["vp_transfer_position"]},
+        {"rank": 2, "cause": "Pack too aggressive", "fix": "Lower 1st hold pressure, or lower H.V. Limit to soften the transfer spike", "settings": ["hold_pressure", "hold_velocity_limit"]},
+        {"rank": 3, "cause": "Clamp tonnage low vs cavity pressure", "fix": "Verify actual clamp = setpoint (correction ON); raise clamp force only after that checks out", "settings": ["clamp_force", "auto_clamp_correction"]},
+        {"rank": 4, "cause": "Melt too thin (hot)", "fix": "Lower barrel temps and/or fill velocity — watch Fill Peak fall as viscosity rises", "settings": ["barrel_temps", "fill_velocity"]},
+        {"rank": 5, "cause": "Mold worn or debris on the parting line", "fix": "Inspect and clean faces; flash localized in one spot is usually steel, not process"}
+      ],
+      "diagnosticSteps": ["Where is it? All around = tonnage/overpack; one spot = tool or debris", "Check All Peak vs Fill Peak — a spike at transfer is the classic new-flash cause", "Confirm tonnage isn't decaying (Clamp F at Hold End)", "Then walk hold pressure down in small steps"]
+    },
+    {
+      "id": "burn_marks",
+      "name": "Burn Marks (Dieseling)",
+      "category": "Fill & Pack",
+      "description": "Black or brown scorched spots, usually at end-of-fill or dead corners — trapped air compressed so fast it ignited and charred the melt.",
+      "quickCheck": ["Always the same location? (trapped-gas signature)", "Were vents recently cleaned?", "Did clamp force get raised lately?"],
+      "causes": [
+        {"rank": 1, "cause": "Vents blocked or crushed shut", "fix": "Clean vents; try LOWER clamp force — over-tonnage crushes vents closed", "settings": ["clamp_force"]},
+        {"rank": 2, "cause": "Fill too fast at end of flow — air can't escape", "fix": "Lower the last fill-stage velocity, or add a slow final stage", "settings": ["fill_velocity", "fill_stage_select", "fill_stage_positions"]},
+        {"rank": 3, "cause": "Pressure spike at transfer slamming trapped gas", "fix": "Raise V-P position (transfer earlier)", "settings": ["vp_transfer_position"]},
+        {"rank": 4, "cause": "Melt too hot — chars easily", "fix": "Lower barrel temps, back pressure, screw RPM", "settings": ["barrel_temps", "back_pressure", "screw_rpm"]}
+      ],
+      "diagnosticSteps": ["Fixed location = venting; clean vents and retest before touching process", "Slow only the final 10-15% of fill — don't give up your whole fill speed", "If it started after a tonnage increase, that's your answer"]
+    },
+    {
+      "id": "weld_lines",
+      "name": "Weld / Knit Lines",
+      "category": "Fill & Pack",
+      "description": "A visible line (and weak spot) where two flow fronts met — downstream of holes, cores, or multiple gates. Cold fronts don't knit.",
+      "quickCheck": ["Cosmetic problem, strength problem, or both?", "Is there a vent at the meeting point?", "Mold temp actually at setpoint on the steel?"],
+      "causes": [
+        {"rank": 1, "cause": "Flow fronts too cold when they meet", "fix": "Raise fill velocity; raise melt and mold temps — hotter fronts knit stronger and fainter", "settings": ["fill_velocity", "barrel_temps", "mold_temp"]},
+        {"rank": 2, "cause": "Not packed together after meeting", "fix": "Raise hold pressure so the joint gets forged, verify gate seal covers it", "settings": ["hold_pressure", "hold_time"]},
+        {"rank": 3, "cause": "Gas trapped exactly at the knit point", "fix": "Vent at the weld location; lower clamp if vents are being crushed", "settings": ["clamp_force"]},
+        {"rank": 4, "cause": "Gate location puts the weld in a bad spot", "fix": "Tool change — move/resize gate or add flow leader (design fix, log it)"}
+      ],
+      "diagnosticSteps": ["Raise mold temp first — biggest weld-line lever for cosmetics", "Then fill speed, watching for burn at the same spot (venting)", "Strength-critical welds may need the tooling fix, not process"]
+    },
+    {
+      "id": "sink_marks",
+      "name": "Sink Marks",
+      "category": "Surface",
+      "description": "Shallow depressions on the surface opposite thick sections, ribs, or bosses — the core stayed molten, kept shrinking, and pulled the skin in.",
+      "quickCheck": ["Over ribs/bosses? (thickness-driven)", "Cushion stable through hold?", "Was hold time proven past gate seal?"],
+      "causes": [
+        {"rank": 1, "cause": "Not enough pack", "fix": "Raise 1st hold pressure in steps; confirm Pack P. actually reaches setpoint", "settings": ["hold_pressure", "hold_velocity_limit"]},
+        {"rank": 2, "cause": "Gate not sealed when hold ends — pack leaks back out", "fix": "Raise hold time; run a gate-seal (weight) study", "settings": ["hold_time"]},
+        {"rank": 3, "cause": "Cushion collapsing — nothing left to pack with", "fix": "Raise dose position to restore cushion; investigate check ring if it wanders", "settings": ["dose_position", "flow_check"]},
+        {"rank": 4, "cause": "Melt too hot — more volumetric shrink than pack can replace", "fix": "Lower barrel temps modestly", "settings": ["barrel_temps"]},
+        {"rank": 5, "cause": "Mold too hot over the sink area", "fix": "Lower mold temp / check the cooling circuit behind that face", "settings": ["mold_temp"]}
+      ],
+      "diagnosticSteps": ["Weigh parts while stepping hold time up — weight plateau = gate seal; sinks past that point aren't a time problem", "Then step hold pressure up, watching flash and dimensions", "Persistent sink over a thick boss with everything maxed = design/thickness, log it"]
+    },
+    {
+      "id": "voids",
+      "name": "Voids / Bubbles",
+      "category": "Surface",
+      "description": "Hollow pockets inside the part (cut one open to confirm). Vacuum voids come from shrinkage in thick sections; gas voids come from air or volatiles carried in the melt.",
+      "quickCheck": ["Void round and in the thickest section? (vacuum)", "Material verified dry?", "Bubbles visible in a purge patty?"],
+      "causes": [
+        {"rank": 1, "cause": "Vacuum void — thick core shrank unpacked", "fix": "Raise hold pressure and hold time; raise mold temp so the skin stays packable longer", "settings": ["hold_pressure", "hold_time", "mold_temp"]},
+        {"rank": 2, "cause": "Moisture gassing in the melt", "fix": "Verify drying (dewpoint, time, temp) before touching the press", "settings": []},
+        {"rank": 3, "cause": "Air pulled in by decompression", "fix": "Lower after-dose pull back distance", "settings": ["pull_back_after_dose"]},
+        {"rank": 4, "cause": "Air trapped during recovery", "fix": "Raise back pressure to squeeze air out of the melt", "settings": ["back_pressure"]}
+      ],
+      "diagnosticSteps": ["Cut the part: smooth round void in thick center = vacuum → pack harder; scattered irregular bubbles = gas → dryness/decompression", "Purge and look for foam or bubbles in the patty", "Fix gas at the source; don't try to pack gas away"]
+    },
+    {
+      "id": "splay",
+      "name": "Splay / Silver Streaks",
+      "category": "Surface",
+      "description": "Silver or off-color streaks fanning across the surface in the flow direction, usually from the gate — gas (steam, air, or degradation volatiles) smeared along the skin.",
+      "quickCheck": ["Dryer: dewpoint, temp, and actual hours in the hopper?", "Melt temp vs datasheet max?", "Suck back recently increased?"],
+      "causes": [
+        {"rank": 1, "cause": "Moisture in the resin (the big one)", "fix": "Fix drying — dewpoint around -40, correct temp, full residence; check for condensation and dryer bypass", "settings": []},
+        {"rank": 2, "cause": "Melt overheating / degrading", "fix": "Lower barrel temps, screw RPM, and back pressure; check residence time isn't excessive", "settings": ["barrel_temps", "screw_rpm", "back_pressure", "dose_delay"]},
+        {"rank": 3, "cause": "Air sucked into the nozzle by decompression", "fix": "Lower after-dose pull back until gate-area splay stops", "settings": ["pull_back_after_dose"]},
+        {"rank": 4, "cause": "Shear splay at the gate", "fix": "Lower the first fill-stage velocity through the gate", "settings": ["fill_velocity", "fill_stage_positions"]},
+        {"rank": 5, "cause": "Drool / cold material smeared in", "fix": "Trim nozzle temp; balance with suck back", "settings": ["nozzle_temp", "pull_back_after_dose"]}
+      ],
+      "diagnosticSteps": ["Always rule out moisture first — pull a sample and verify drying, don't trust the schedule", "Streaks only at the gate = decompression air or gate shear; everywhere = moisture or melt temp", "Change one variable, run 10 shots, judge"],
+      "notes": "Hygroscopic resins (PC, PA/nylon, PBT, ABS) will splay from moisture you can't see or feel. PC and nylon also lose strength (hydrolysis) — wet molding hurts more than cosmetics."
+    },
+    {
+      "id": "flow_lines",
+      "name": "Flow Lines / Record Grooves",
+      "category": "Surface",
+      "description": "Ripples, halos, or ring patterns on the surface tracking the flow front — the front moved too slowly or unevenly and each hesitation printed.",
+      "quickCheck": ["Front too slow (fill time long)?", "Mold temp low?", "Do rings match a velocity stage change position?"],
+      "causes": [
+        {"rank": 1, "cause": "Flow front too cold/slow — printing as it creeps", "fix": "Raise fill velocity; raise mold temp", "settings": ["fill_velocity", "mold_temp"]},
+        {"rank": 2, "cause": "Melt too cold", "fix": "Raise barrel temps", "settings": ["barrel_temps"]},
+        {"rank": 3, "cause": "Visible hesitation at a stage break", "fix": "Smooth the profile — move or remove the stage transition", "settings": ["fill_stage_positions", "fill_stage_select"]},
+        {"rank": 4, "cause": "Under-packed surface not replicating steel", "fix": "Raise hold pressure", "settings": ["hold_pressure"]}
+      ],
+      "diagnosticSteps": ["Raise mold temp and fill speed first — the classic pair for this defect", "If a ring sits exactly where a velocity change happens, that's your smoking gun", "Confirm no burn appears at end-of-fill as you speed up"]
+    },
+    {
+      "id": "gloss_variation",
+      "name": "Gloss Variation",
+      "category": "Surface",
+      "description": "Patchy shiny/dull areas — surface replication of the steel varied, from uneven mold temperature, uneven packing, or flow behavior.",
+      "quickCheck": ["Dull patch over one cooling circuit?", "Same patch every shot? (thermal) ", "Texture tool or polished?"],
+      "causes": [
+        {"rank": 1, "cause": "Mold surface temperature uneven", "fix": "Check every cooling circuit flow; balance halves; pyrometer-map the steel", "settings": ["mold_temp"]},
+        {"rank": 2, "cause": "Packing uneven — dull where pressure is low", "fix": "Raise hold pressure / hold time; verify gate seal", "settings": ["hold_pressure", "hold_time"]},
+        {"rank": 3, "cause": "Fill speed changes printing gloss bands", "fix": "Smooth the velocity profile", "settings": ["fill_velocity", "fill_stage_positions"]},
+        {"rank": 4, "cause": "Tool surface condition (polish/texture wear, deposits)", "fix": "Clean/inspect the cavity surface — outgassing deposits dull steel over a run"}
+      ],
+      "diagnosticSteps": ["Map the dull zones against cooling circuits first", "Higher mold temp generally = higher, more even gloss", "If gloss shifts over a run with no setting change: deposits on the steel"]
+    },
+    {
+      "id": "jetting",
+      "name": "Jetting",
+      "category": "Gate & Nozzle",
+      "description": "A worm-like squiggle on the surface starting at the gate — melt shot across the cavity as a rope instead of flowing as a front, then froze.",
+      "quickCheck": ["Squiggle starts at the gate?", "First-stage speed high through the gate?", "Cold slug well present/working?"],
+      "causes": [
+        {"rank": 1, "cause": "Melt jets through the gate too fast", "fix": "Lower the 1st fill-stage velocity until flow lays down, then speed up after the gate", "settings": ["fill_velocity", "fill_stage_positions", "fill_stage_select"]},
+        {"rank": 2, "cause": "Cold slug fired into the cavity", "fix": "Raise nozzle temp slightly; check suck back isn't freezing the tip; verify cold-slug well", "settings": ["nozzle_temp", "pull_back_after_dose"]},
+        {"rank": 3, "cause": "Melt too cold and stiff — ropes instead of fans", "fix": "Raise barrel temps", "settings": ["barrel_temps"]},
+        {"rank": 4, "cause": "Gate geometry aims flow into open space", "fix": "Tooling: impinge flow against a wall/pin, or enlarge gate (log it)"}
+      ],
+      "diagnosticSteps": ["Slow ONLY the gate stage — add a stage break just past the gate and restore speed after", "If a cold blemish rides the jet, chase nozzle temp / cold slug", "Still jetting slow and hot = gate design"]
+    },
+    {
+      "id": "gate_blush",
+      "name": "Gate Blush",
+      "category": "Gate & Nozzle",
+      "description": "A hazy, dull, or discolored halo right at the gate — high shear tearing the surface as melt rams through the smallest opening in the system.",
+      "quickCheck": ["First-stage velocity?", "Gate size/condition?", "Melt temp low (stiff melt shears worse)?"],
+      "causes": [
+        {"rank": 1, "cause": "Too much shear through the gate", "fix": "Lower 1st-stage fill velocity through the gate", "settings": ["fill_velocity", "fill_stage_positions"]},
+        {"rank": 2, "cause": "Melt too cold at the gate", "fix": "Raise barrel/nozzle temps a step", "settings": ["barrel_temps", "nozzle_temp"]},
+        {"rank": 3, "cause": "Pack slamming the gate area", "fix": "Soften transfer (H.V. Limit) or taper hold with a lower 2nd stage", "settings": ["hold_velocity_limit", "hold_pressure"]},
+        {"rank": 4, "cause": "Gate too small or sharp-edged", "fix": "Tooling: open/radius the gate (log it)"}
+      ],
+      "diagnosticSteps": ["Slow the gate stage first — blush responds fast if shear is the cause", "Then a modest melt-temp bump", "No response = gate steel"]
+    },
+    {
+      "id": "stringing",
+      "name": "Stringing",
+      "category": "Gate & Nozzle",
+      "description": "Fine threads of plastic trailing from the nozzle or gates when the mold opens — melt at the tip stayed fluid and pulled into strings.",
+      "quickCheck": ["Nozzle temp vs front zone?", "Suck back amount?", "Hot runner tips or cold sprue?"],
+      "causes": [
+        {"rank": 1, "cause": "Not enough decompression", "fix": "Raise after-dose pull back in 0.5 mm steps until strings stop", "settings": ["pull_back_after_dose"]},
+        {"rank": 2, "cause": "Nozzle/tip too hot", "fix": "Lower nozzle temp in small steps", "settings": ["nozzle_temp"]},
+        {"rank": 3, "cause": "Residual melt pressure at mold open", "fix": "Enable/raise Ret Vel after hold, or add a small dose delay", "settings": ["hold_return_velocity", "dose_delay"]},
+        {"rank": 4, "cause": "Wrong nozzle tip style for the material", "fix": "Hardware: consider a shut-off or reverse-taper tip for stubborn resins (log it)"}
+      ],
+      "diagnosticSteps": ["Suck back up in small steps — stop at the first clean shot (too much causes splay)", "Then nozzle temp down a notch at a time", "Nylon is the classic stringer — expect to balance both"]
+    },
+    {
+      "id": "drooling",
+      "name": "Drooling",
+      "category": "Gate & Nozzle",
+      "description": "Melt oozing from the nozzle between shots — puddles on the sprue bushing, cold slugs next shot, and blemishes at the gate.",
+      "quickCheck": ["Fill Start Position drifting? (pressure pushing screw)", "Nozzle temp?", "Moisture? Wet resin gasses and drools"],
+      "causes": [
+        {"rank": 1, "cause": "Melt pressure left in front of the screw", "fix": "Raise after-dose pull back; consider Ret Vel", "settings": ["pull_back_after_dose", "hold_return_velocity"]},
+        {"rank": 2, "cause": "Nozzle too hot", "fix": "Lower nozzle temp", "settings": ["nozzle_temp"]},
+        {"rank": 3, "cause": "Moisture gassing pushes melt out", "fix": "Verify drying", "settings": []},
+        {"rank": 4, "cause": "Long open time lets the tip drain", "fix": "Reduce interval/handling time, or add dose delay so melt is prepared later", "settings": ["interval_time", "dose_delay"]}
+      ],
+      "diagnosticSteps": ["Watch the tip for one full cycle — when does it drip?", "Check Fill Start Position shot-to-shot; drift = pressure escaping out the nozzle", "Balance suck back vs nozzle temp; recheck for splay after changes"]
+    },
+    {
+      "id": "warpage",
+      "name": "Warpage",
+      "category": "Dimensional & Warp",
+      "description": "Part twists, bows, or cups after ejection — one region shrank more than another. Differential shrinkage is always the mechanism; the cause is what made it differential.",
+      "quickCheck": ["Core vs cavity water temps equal?", "Warp direction consistent shot to shot?", "Glass-filled material? (fiber orientation)"],
+      "causes": [
+        {"rank": 1, "cause": "Uneven mold cooling — one face hotter", "fix": "Balance/verify every circuit (flow, not just temp); equalize halves", "settings": ["mold_temp"]},
+        {"rank": 2, "cause": "Ejected too hot — part finishes shrinking unrestrained", "fix": "Raise cooling time; consider a cooling fixture", "settings": ["cool_time"]},
+        {"rank": 3, "cause": "Overpack near the gate vs starved far end", "fix": "Lower 1st hold, use a tapered 2nd stage; verify even fill", "settings": ["hold_pressure", "hold_time"]},
+        {"rank": 4, "cause": "Fiber orientation (glass-filled)", "fix": "Change fill speed to alter orientation; often a gate-location problem (log it)", "settings": ["fill_velocity"]},
+        {"rank": 5, "cause": "High molded-in stress from cold mold/melt", "fix": "Raise mold temp so the part relaxes in the tool", "settings": ["mold_temp", "barrel_temps"]}
+      ],
+      "diagnosticSteps": ["Thermal-map both halves — a 10 degree imbalance is enough to warp", "Add cooling time as a test: warp improves = ejection temp; doesn't = packing/orientation", "Adjust pack profile last; measure after 24h (parts keep moving)"]
+    },
+    {
+      "id": "dimensional_drift",
+      "name": "Dimensional Drift / Inconsistency",
+      "category": "Dimensional & Warp",
+      "description": "Dimensions wander shot-to-shot or across a run with nothing 'changed' — the process is leaking consistency somewhere. Part weight is your best tracer.",
+      "quickCheck": ["Is Min Cushion repeating tightly?", "Part weight trend over 30 shots?", "Anything thermal still soaking (machine, mold, dryer)?"],
+      "causes": [
+        {"rank": 1, "cause": "Cushion wandering — check ring leaking", "fix": "Run Flow-Check; verify dose repeatability; service the ring", "settings": ["flow_check"]},
+        {"rank": 2, "cause": "Gate seal marginal — some shots seal, some don't", "fix": "Raise hold time past the weight plateau with margin", "settings": ["hold_time"]},
+        {"rank": 3, "cause": "Pressure-limited fill on some shots", "fix": "Restore headroom above Fill Peak", "settings": ["fill_pressure_limit"]},
+        {"rank": 4, "cause": "Tonnage drifting with temperature", "fix": "Confirm Auto Clamp Force Correction ON and tracking", "settings": ["auto_clamp_correction"]},
+        {"rank": 5, "cause": "Melt inconsistency — feed, drying, regrind ratio", "fix": "Stabilize back pressure/RPM; check throat temp; audit material handling", "settings": ["back_pressure", "screw_rpm", "feed_throat_temp"]}
+      ],
+      "diagnosticSteps": ["Weigh 30 consecutive parts — weight scatter maps the problem: with cushion scatter = check ring; with fill-time scatter = fill control", "Fix consistency before chasing the nominal dimension", "Only then move the mean with hold pressure (bigger) or less pack (smaller)"]
+    },
+    {
+      "id": "black_specks",
+      "name": "Black Specks / Contamination",
+      "category": "Material & Strength",
+      "description": "Dark flecks scattered in the part — charred resin flaking off from dead spots, degraded material, or dirty regrind riding through.",
+      "quickCheck": ["Specks in the virgin material itself?", "How long since a proper purge/screw pull?", "Residence time long (small shot, big barrel)?"],
+      "causes": [
+        {"rank": 1, "cause": "Degraded resin coating the screw/barrel breaking loose", "fix": "Aggressive purge (commercial purge compound); if it returns fast, schedule a screw pull", "settings": []},
+        {"rank": 2, "cause": "Running too hot for too long", "fix": "Lower barrel temps, back pressure, RPM; reduce residence (dose delay, cycle discipline)", "settings": ["barrel_temps", "back_pressure", "screw_rpm", "dose_delay"]},
+        {"rank": 3, "cause": "Contaminated material path", "fix": "Inspect hopper, loader, grinder, and regrind for foreign material and cross-contamination", "settings": []},
+        {"rank": 4, "cause": "Barrel/screw wear — plating or steel flakes", "fix": "Maintenance inspection if specks are metallic or persistent after purging", "settings": []}
+      ],
+      "diagnosticSteps": ["Purge to clean, then time how long until specks return — minutes = active degradation; days = deposits", "Check specks with a magnifier: charred plastic vs metal vs foreign", "Audit residence: shot size well under 20% of barrel capacity means material is cooking in there"]
+    },
+    {
+      "id": "brittleness",
+      "name": "Brittleness",
+      "category": "Material & Strength",
+      "description": "Parts crack or snap under loads they should survive — the polymer chains got shortened (degraded) or the part is full of stress or bad welds.",
+      "quickCheck": ["Was the resin dry AT molding (PC/PA hydrolyze wet)?", "Regrind percentage?", "Break always at a weld line?"],
+      "causes": [
+        {"rank": 1, "cause": "Hydrolysis — molded wet (PC, nylon, PBT)", "fix": "Fix drying; wet molding permanently destroys strength even when parts look fine", "settings": []},
+        {"rank": 2, "cause": "Thermal degradation", "fix": "Lower barrel temps, RPM, back pressure; cut residence time", "settings": ["barrel_temps", "screw_rpm", "back_pressure"]},
+        {"rank": 3, "cause": "Too much / too many-pass regrind", "fix": "Cap regrind ratio; audit what's actually going in the blender", "settings": []},
+        {"rank": 4, "cause": "Weak weld lines", "fix": "See Weld Lines — hotter fronts, more pack", "settings": ["fill_velocity", "mold_temp", "hold_pressure"]},
+        {"rank": 5, "cause": "Molded-in stress", "fix": "Raise mold temp; lower hold; avoid cold-fast-stressed processing", "settings": ["mold_temp", "hold_pressure"]}
+      ],
+      "diagnosticSteps": ["Where does it break? Weld line = knit problem; random = material degradation", "Verify drying records and melt temp vs datasheet", "Mold a batch at datasheet-nominal everything with verified-dry virgin resin — if strength returns, work back to find the abuse"]
+    },
+    {
+      "id": "delamination",
+      "name": "Delamination",
+      "category": "Material & Strength",
+      "description": "Surface peels in flaky layers like an onion — layers of the part never bonded, usually from contamination or a cold, over-sheared skin.",
+      "quickCheck": ["Material contamination possible (wrong regrind, unpurged resin)?", "Excess mold release spray?", "Melt temp low?"],
+      "causes": [
+        {"rank": 1, "cause": "Incompatible resin mixed in", "fix": "Full purge; audit material handling and grinder for cross-contamination", "settings": []},
+        {"rank": 2, "cause": "Cold melt sheared into layers", "fix": "Raise barrel temps; lower gate-stage velocity", "settings": ["barrel_temps", "fill_velocity"]},
+        {"rank": 3, "cause": "Too much mold release / surface contamination", "fix": "Stop the spray; clean the tool — release agent is a bond-breaker between layers", "settings": []},
+        {"rank": 4, "cause": "Moisture films between layers", "fix": "Verify drying", "settings": []}
+      ],
+      "diagnosticSteps": ["Peel a flake and burn-test/compare it — contamination is the most common answer", "Eliminate mold release entirely as a test", "Then melt temp up, gate shear down"]
+    },
+    {
+      "id": "color_streaks",
+      "name": "Color Streaks / Poor Mixing",
+      "category": "Material & Strength",
+      "description": "Swirls or streaks of uneven color — colorant never got homogenized into the melt, or a second material is riding along.",
+      "quickCheck": ["Masterbatch ratio and mixer working?", "Back pressure low?", "Streaks appear after a color change? (old color purging out)"],
+      "causes": [
+        {"rank": 1, "cause": "Not enough mixing work in recovery", "fix": "Raise back pressure; a modest RPM increase adds mixing too", "settings": ["back_pressure", "screw_rpm"]},
+        {"rank": 2, "cause": "Masterbatch dosing/carrier problem", "fix": "Verify let-down ratio and that the carrier resin matches the base", "settings": []},
+        {"rank": 3, "cause": "Rear barrel too cold — pigment not dispersing", "fix": "Raise rear zone temps a step", "settings": ["barrel_temps"]},
+        {"rank": 4, "cause": "Incomplete color change purge", "fix": "Purge properly (patties until clean); check dead spots in nozzle/tip", "settings": []}
+      ],
+      "diagnosticSteps": ["Back pressure up first — the #1 mixing knob", "Verify the blender/doser actually feeding at ratio", "Persistent streaks with everything right = consider a mixing nozzle/screw (hardware)"]
+    },
+    {
+      "id": "unmelts",
+      "name": "Unmelts",
+      "category": "Material & Strength",
+      "description": "Visible solid granules or gels in the part — pellets got to the front of the screw without fully melting.",
+      "quickCheck": ["Rear zone temps at setpoint?", "Dose time very short (screw racing)?", "Shot size huge for the barrel?"],
+      "causes": [
+        {"rank": 1, "cause": "Not enough melting energy in recovery", "fix": "Raise back pressure; lower screw RPM (slower transport = more melting time per flight)", "settings": ["back_pressure", "screw_rpm"]},
+        {"rank": 2, "cause": "Rear/mid zones too cold", "fix": "Raise rear and middle barrel temps", "settings": ["barrel_temps"]},
+        {"rank": 3, "cause": "Shot too big for the barrel — residence too short", "fix": "If shot uses most of the stroke, the machine is undersized for the job (flag it)", "settings": ["dose_position"]},
+        {"rank": 4, "cause": "High-melt-point contaminant in the blend", "fix": "Audit material/regrind for a different polymer", "settings": []}
+      ],
+      "diagnosticSteps": ["Purge patty check — unmelts visible in the purge confirms it's upstream of the mold", "Slow RPM + raise BP together, retest", "Then rear zones up in 5-10 degree steps"]
+    },
+    {
+      "id": "cracking",
+      "name": "Cracking / Stress Whitening",
+      "category": "Material & Strength",
+      "description": "Cracks or white stress marks, at ejection or days later — molded-in or mechanically applied stress exceeded what the material could carry.",
+      "quickCheck": ["Cracks at ejector pins / around cores? (mechanical)", "Near the gate? (overpack)", "Delayed cracking in the field? (residual stress + chemicals)"],
+      "causes": [
+        {"rank": 1, "cause": "Overpacking — residual stress especially near the gate", "fix": "Lower 1st hold pressure; taper with 2nd stage", "settings": ["hold_pressure"]},
+        {"rank": 2, "cause": "Ejection stress — part too hot or gripped too hard", "fix": "Raise cooling time; slow/soften ejector; slow mold-open breakaway", "settings": ["cool_time", "ejector_speed_pressure", "mold_open_profile"]},
+        {"rank": 3, "cause": "Cold mold = high molded-in stress", "fix": "Raise mold temp", "settings": ["mold_temp"]},
+        {"rank": 4, "cause": "Degraded/brittle material", "fix": "See Brittleness — drying, temps, regrind", "settings": ["barrel_temps"]},
+        {"rank": 5, "cause": "Sharp corners / thin bosses concentrating stress", "fix": "Design: add radii (log for tooling)"}
+      ],
+      "diagnosticSteps": ["Location tells the story: pin circles = ejection; gate area = pack; random+delayed = stress+environment", "Cooling time up as a quick test for ejection-driven cracks", "Then walk hold pressure down watching sinks on the other side"]
+    },
+    {
+      "id": "sticking",
+      "name": "Part / Sprue Sticking",
+      "category": "Ejection & Release",
+      "description": "Part hangs in the cavity or on the core, or the sprue stays in the bushing — release forces beat the ejection system.",
+      "quickCheck": ["Sticks to which half?", "Sprue or part?", "Did hold pressure change recently?"],
+      "causes": [
+        {"rank": 1, "cause": "Overpacked — part gripping the steel", "fix": "Lower hold pressure/time; transfer a touch earlier", "settings": ["hold_pressure", "hold_time", "vp_transfer_position"]},
+        {"rank": 2, "cause": "Too hot at ejection — soft part grabbing", "fix": "Raise cooling time; check mold temp", "settings": ["cool_time", "mold_temp"]},
+        {"rank": 3, "cause": "Sprue sticking: nozzle/bushing mismatch", "fix": "Check nozzle radius and orifice (nozzle hole must be SMALLER than bushing hole); verify sprue puller; cool the sprue more", "settings": ["cool_time", "nozzle_temp"]},
+        {"rank": 4, "cause": "Ejection can't overcome release force", "fix": "More stroke/pressure or a second count — but treat as a band-aid", "settings": ["ejector_stroke", "ejector_speed_pressure", "ejector_count_delay"]},
+        {"rank": 5, "cause": "Tool condition — polish, draft, undercuts, damage", "fix": "Inspect for drag marks and burrs; polish in draft direction (tool room)"}
+      ],
+      "diagnosticSteps": ["Which half it sticks to points at that half's release problem", "Lower pack first — overpack is the most common process cause", "Only reach for stronger ejection after pack and cooling are ruled out"]
+    },
+    {
+      "id": "ejector_marks",
+      "name": "Ejector Pin Marks",
+      "category": "Ejection & Release",
+      "description": "Visible circles, gloss spots, sink-like depressions, or stress rings where the pins push — the part was too soft or the push too hard for the material to take.",
+      "quickCheck": ["Part temperature at ejection (too soft)?", "Ejector speed/pressure high?", "Marks raised, sunken, or stress-white?"],
+      "causes": [
+        {"rank": 1, "cause": "Part too hot when pushed", "fix": "Raise cooling time", "settings": ["cool_time"]},
+        {"rank": 2, "cause": "Ejection too fast/hard", "fix": "Lower ejector velocity and pressure", "settings": ["ejector_speed_pressure"]},
+        {"rank": 3, "cause": "High release force making pins work too hard", "fix": "Lower hold (overpack); see Sticking", "settings": ["hold_pressure"]},
+        {"rank": 4, "cause": "Pins mis-set or too small for the push (tool)", "fix": "Tool room: pin flush/protrusion check; larger or more pins if chronic"}
+      ],
+      "diagnosticSteps": ["Cooling time up 20% as a test — marks fade = temperature", "Then soften ejection", "Marks on a cold, gently-ejected part = pin fit/tool issue"]
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "actuals": [
+    {
+      "id": "min_cushion",
+      "name": "Min Cushion",
+      "yourScreen": "4.81 mm",
+      "whatItTells": "The smallest amount of melt left in front of the screw during hold — your pressure-transmission reserve. With a cushion, hold pressure reaches the part; with zero cushion, the screw is bottomed out and hold pressure goes into steel, not plastic. The single most important consistency number on the machine.",
+      "healthy": "Small, stable, and never zero. A few mm that repeats within a few hundredths shot after shot.",
+      "rising": "More material left over: check ring seating better than before, viscosity up (colder melt, new lot), or shot size crept up. Parts may trend heavy/flashy.",
+      "falling": "Losing your reserve: check ring leaking (the classic), shot size too small, hotter/thinner melt, or V-P transfer moved. Falling toward zero = sinks, shorts, and dimensional drift incoming.",
+      "checkFirst": ["Trend over 20 shots — steady, drifting, or jumping?", "Dose position and V-P unchanged?", "If it wanders randomly: suspect the check ring (run Flow-Check / a static leak test)"]
+    },
+    {
+      "id": "hold_end",
+      "name": "Hold End Position",
+      "yourScreen": "4.81 mm",
+      "whatItTells": "Where the screw stopped when hold finished. On a well-behaved process it equals Min Cushion (yours match at 4.81) — the screw crept forward during hold and stayed.",
+      "healthy": "Matches Min Cushion and repeats tightly.",
+      "rising": "Screw finishing further back — packing less material in: gate freezing earlier, hold pressure not achieved, or viscosity up.",
+      "falling": "Screw finishing deeper — gate staying open longer or thinner melt letting more material pack in. Watch for flash and heavy parts.",
+      "checkFirst": ["Compare with Min Cushion — a gap between them means backflow during hold (check ring)", "Did melt or mold temp change?"]
+    },
+    {
+      "id": "fill_start_pos",
+      "name": "Fill Start Position",
+      "yourScreen": "26.02 mm",
+      "whatItTells": "Where the screw actually sat when injection began. It should equal dose position + after-dose pull back (yours: 22.00 + 4.00 = 26.0 — checks out). It's a free health check that dosing and decompression did what they were told.",
+      "healthy": "Matches the math above within a few hundredths, every shot.",
+      "rising": "Screw starting further back than commanded — over-travel on dose stop or drift in pull back.",
+      "falling": "Starting short — melt pressure pushing the screw forward after decompression (drooling out the nozzle), or dose stopping early.",
+      "checkFirst": ["Does dose pos + pull back = this number?", "If it wanders: watch the nozzle for drool between cycles"]
+    },
+    {
+      "id": "fill_time",
+      "name": "Fill Time",
+      "yourScreen": "0.131 sec",
+      "whatItTells": "How long velocity-controlled fill took to reach V-P transfer. Under true velocity control this barely moves — so any variation means the machine could NOT hold your set speed, which makes fill time the best single 'is my fill in control?' number.",
+      "healthy": "Repeats within a few thousandths of a second.",
+      "rising": "Fill slowing down: pressure-limited (Fill Peak flat at the limit), viscosity up, restriction growing (cold slug, plugged gate/vent), or check ring leaking during fill.",
+      "falling": "Filling easier: hotter/thinner melt, or less material ahead of the screw (short dose).",
+      "checkFirst": ["Is Fill Peak sitting at the Maximum Filling Pressure limit? That's pressure-limited fill — fix that first", "Any material/dryer/lot change?"]
+    },
+    {
+      "id": "fill_peak",
+      "name": "Fill Peak",
+      "yourScreen": "1554 kgf/cm2",
+      "whatItTells": "The highest injection pressure during fill — what it actually cost to push melt in at your set speed. At fixed speed, this is a live viscosity gauge: material, temperature, and flow-restriction changes all show up here first.",
+      "healthy": "Stable, with clear headroom below the pressure limit (yours: 1554 vs a 1680 limit — about 8% headroom, on the tight side).",
+      "rising": "Melt getting stiffer or path getting tighter: colder melt, new lot/more regrind, blocked vents or gate, mold cooling colder. If it reaches the limit, velocity control is lost.",
+      "falling": "Melt thinner: hotter barrel/shear, wetter material, easier flow. Watch for flash.",
+      "checkFirst": ["Gap to the pressure limit — keep 10-20%", "Correlate with Fill Time: both moving together confirms a real viscosity shift"]
+    },
+    {
+      "id": "all_peak",
+      "name": "All Peak",
+      "yourScreen": "1559 kgf/cm2",
+      "whatItTells": "The highest pressure anywhere in the whole shot — fill or hold. Compare it with Fill Peak: nearly equal (yours: 1559 vs 1554) means the spike lives in fill; much higher than Fill Peak means a pressure spike is happening AT transfer, the classic flash-maker.",
+      "healthy": "At or barely above Fill Peak.",
+      "rising": "A growing transfer spike: V-P too late, H.V. Limit too aggressive, hold 1st too high for the moment of switchover.",
+      "falling": "Transfer getting softer — fine, as long as packing still completes.",
+      "checkFirst": ["All Peak minus Fill Peak — a big gap points at the transfer moment", "Flash starting at the same time? Same root cause"]
+    },
+    {
+      "id": "pack_p",
+      "name": "Pack P.",
+      "yourScreen": "1292 kgf/cm2",
+      "whatItTells": "The pressure actually achieved during pack/hold. Should sit at your hold setpoint — if it can't get there, your parts are not getting the packing the recipe claims.",
+      "healthy": "Matches the set hold pressure, steady.",
+      "rising": "Only moves if the setpoint or transfer conditions changed.",
+      "falling": "Machine failing to reach hold setpoint: H.V. Limit too low to build pressure, cushion collapsing (nothing left to push), or hold time cut before pressure develops.",
+      "checkFirst": ["Compare against set hold pressure", "Check Min Cushion at the same time — no cushion, no pack"]
+    },
+    {
+      "id": "dose_time",
+      "name": "Dose Time",
+      "yourScreen": "0.67 sec",
+      "whatItTells": "How long screw recovery took. A stability gauge for the whole feeding/melting system: material flow, throat, screw and check ring condition, back pressure, RPM.",
+      "healthy": "Repeats tightly and finishes comfortably inside cooling time (yours: 0.67 vs 1.2 cooling — fits, thin margin).",
+      "rising": "Feeding or melting struggling: bridging at the throat, hopper running out, back pressure up, worn screw slipping, regrind fines.",
+      "falling": "Recovering easier: hotter barrel, lower back pressure, freer-flowing material.",
+      "checkFirst": ["Trend it — a slow climb over hours is a feed-throat or material story", "If dose time > cooling time, dosing is now setting your cycle"]
+    },
+    {
+      "id": "cycle_time",
+      "name": "Cycle Time",
+      "yourScreen": "3.24 sec",
+      "whatItTells": "Total shot-to-shot time. Any change means SOMETHING changed — cycle time never drifts on its own; it's the sum of pieces you can check one by one.",
+      "healthy": "Flat, boring, identical.",
+      "rising": "Find the piece that grew: fill time, dose time, an alarm/retry, mold open-close, ejection, or an operator in semi-auto.",
+      "falling": "Someone changed a setting — confirm it was on purpose and documented.",
+      "checkFirst": ["Compare the sub-times (fill, dose, mold open/close, eject) against a known-good setup sheet", "Semi-auto? The human is the variable"]
+    },
+    {
+      "id": "screw_torq",
+      "name": "Screw Torque",
+      "yourScreen": "0.9 %",
+      "whatItTells": "How hard the dose servo is working to turn the screw. A melt-stiffness and mechanical-health gauge for recovery.",
+      "healthy": "Low and steady during dosing for the given resin.",
+      "rising": "Screw fighting: barrel rear too cold, unmelted or contaminated material, back pressure raised, mechanical drag. Sudden spikes on a cold start = you rotated before soak — stop.",
+      "falling": "Easier rotation: hotter rear zones, slippery material, or a worn screw doing less work (with dose time rising alongside).",
+      "checkFirst": ["Never judge on a cold machine — full heat soak first", "Rising torque + rising dose time together = melting-system problem, not coincidence"]
+    },
+    {
+      "id": "peak_clamp",
+      "name": "Peak Clamp",
+      "yourScreen": "104 TF",
+      "whatItTells": "The highest clamp tonnage seen during the shot. Injection pressure tries to blow the mold open; the extra tonnage above your setpoint (yours: 104 vs 100 set) is the cavity pushing back through the steel.",
+      "healthy": "Slightly above setpoint, consistent.",
+      "rising": "Cavity pressure climbing: hotter pack, later transfer, higher hold — the mold is being worked harder. Big rises risk flash and tool fatigue.",
+      "falling": "Less cavity load — or tonnage decaying (see Auto Clamp Force Correction).",
+      "checkFirst": ["Delta vs setpoint over time — a growing gap tracks a hotter, more aggressive pack", "Flash appearing as this climbs confirms it"]
+    },
+    {
+      "id": "clamp_f_hold_end",
+      "name": "Clamp F (Hold End)",
+      "yourScreen": "101.1 TF",
+      "whatItTells": "Clamp force remaining when hold finished. Confirms tonnage held through the whole pressure phase instead of decaying mid-shot.",
+      "healthy": "Right at setpoint (yours: 101.1 vs 100 — textbook).",
+      "rising": "Thermal growth of mold/toggle adding tonnage — correction system should be trimming this.",
+      "falling": "Tonnage bleeding off during the shot: correction fault, mechanical/lubrication issue, mold-height setup. Flash at end-of-pack follows.",
+      "checkFirst": ["Auto Clamp Force Correction ON and healthy?", "Compare morning vs afternoon — drift with temperature points at thermal correction"]
+    },
+    {
+      "id": "clamp_force_actual",
+      "name": "Clamp Force (Actual)",
+      "yourScreen": "102 TF",
+      "whatItTells": "Live measured tonnage while clamped. The truth against which the 100 TF setpoint is judged.",
+      "healthy": "Within a ton or two of setpoint all day.",
+      "rising": "Thermal expansion of the mold stack — on a toggle machine this silently over-tonnages until corrected.",
+      "falling": "Losing squeeze: correction issue, mechanical wear, something changed in mold height. Parting-line flash is the symptom that follows.",
+      "checkFirst": ["Watch it across warm-up — that's exactly what Auto Clamp Force Correction exists to flatten", "CF1-CF4 (per-tie-bar) even? Uneven = parallelism problem"]
+    }
+  ],
+  "toVerify": [
+    "Dose Start (9.57 mm on your screen) — the arithmetic doesn't match hold-end + pre-dose pull back; confirm what this field logs on the SE-EV before writing its entry"
+  ]
+}

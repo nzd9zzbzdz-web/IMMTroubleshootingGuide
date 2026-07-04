@@ -1,0 +1,118 @@
+{
+  "wizard": {
+    "start": "root",
+    "nodes": {
+      "root": {
+        "q": "What's wrong with the part?",
+        "options": [
+          {"a": "It isn't fully formed, or the shape is wrong", "next": "shape"},
+          {"a": "The surface looks wrong (streaks, marks, dull, patterns)", "next": "surface"},
+          {"a": "It's weak, cracks, or breaks", "next": "strength"},
+          {"a": "Marks, threads, or ooze near the gate or nozzle", "next": "gate"},
+          {"a": "Trouble getting the part out of the mold", "next": "ejection"},
+          {"a": "Dimensions are off or drift shot-to-shot", "next": "dims"},
+          {"a": "Specks or color problems in the plastic", "next": "material"}
+        ]
+      },
+
+      "shape": {
+        "q": "How is the shape wrong?",
+        "options": [
+          {"a": "It didn't fill out — part is incomplete", "next": "r_short_shot"},
+          {"a": "Thin flakes of plastic at the edges or parting line", "next": "r_flash"},
+          {"a": "Dimples or depressions over thick areas, ribs, or bosses", "next": "r_sink"},
+          {"a": "Hollow pockets inside (found when you cut it open)", "next": "r_voids"},
+          {"a": "It twists, bows, or cups after ejection", "next": "r_warpage"}
+        ]
+      },
+
+      "surface": {
+        "q": "What does the surface look like?",
+        "options": [
+          {"a": "Silver or off-color streaks fanning from the gate", "next": "r_splay"},
+          {"a": "Brown or black scorched spots", "next": "r_burn"},
+          {"a": "A worm-like squiggle starting at the gate", "next": "r_jetting"},
+          {"a": "A hazy, dull halo right around the gate", "next": "r_gate_blush"},
+          {"a": "Ripples, rings, or halos tracking the flow", "next": "r_flow_lines"},
+          {"a": "A visible line where two flow fronts met", "next": "r_weld"},
+          {"a": "Patchy shiny and dull areas", "next": "r_gloss"},
+          {"a": "The surface peels off in flaky layers", "next": "r_delam"},
+          {"a": "Swirls or streaks of uneven color", "next": "r_color"}
+        ]
+      },
+
+      "strength": {
+        "q": "How does it fail?",
+        "options": [
+          {"a": "Snaps or cracks under loads it should handle (brittle)", "next": "r_brittle"},
+          {"a": "Cracks or white stress marks at ejection or later", "next": "r_cracking"},
+          {"a": "It always breaks along a visible line", "next": "r_weld"},
+          {"a": "The surface peels apart in layers", "next": "r_delam"}
+        ]
+      },
+
+      "gate": {
+        "q": "What's happening at the gate or nozzle?",
+        "options": [
+          {"a": "Fine threads or strings trail when the mold opens", "next": "r_stringing"},
+          {"a": "Melt oozes or drools from the nozzle between shots", "next": "r_drooling"},
+          {"a": "A worm-like squiggle mark at the gate", "next": "r_jetting"},
+          {"a": "A hazy, dull halo at the gate", "next": "r_gate_blush"}
+        ]
+      },
+
+      "ejection": {
+        "q": "What's the ejection problem?",
+        "options": [
+          {"a": "Part hangs in the cavity or on the core; sprue stuck", "next": "r_sticking"},
+          {"a": "Circles, gloss, or sink marks where the pins push", "next": "r_ejector"},
+          {"a": "Cracks or stress-whitening at the pins on ejection", "next": "r_cracking"}
+        ]
+      },
+
+      "dims": {
+        "q": "What's off dimensionally?",
+        "options": [
+          {"a": "Sizes wander shot-to-shot with nothing changed", "next": "r_dim_drift"},
+          {"a": "Consistent, but the wrong size", "next": "r_dim_drift"},
+          {"a": "It twists, bows, or cups (warp)", "next": "r_warpage"}
+        ]
+      },
+
+      "material": {
+        "q": "What do you see in the plastic?",
+        "options": [
+          {"a": "Dark flecks or specks scattered through the part", "next": "r_black_specks"},
+          {"a": "Solid granules or gels — unmelted pellets", "next": "r_unmelts"},
+          {"a": "Swirls or uneven color / poor mixing", "next": "r_color"},
+          {"a": "Silver streaks (could be moisture)", "next": "r_splay"},
+          {"a": "The surface peels apart in layers", "next": "r_delam"}
+        ]
+      },
+
+      "r_short_shot": {"result": {"primary": "short_shot"}},
+      "r_flash": {"result": {"primary": "flash"}},
+      "r_sink": {"result": {"primary": "sink_marks", "also": ["voids"]}},
+      "r_voids": {"result": {"primary": "voids", "also": ["sink_marks"]}},
+      "r_warpage": {"result": {"primary": "warpage", "also": ["dimensional_drift"]}},
+      "r_splay": {"result": {"primary": "splay", "also": ["burn_marks"]}},
+      "r_burn": {"result": {"primary": "burn_marks", "also": ["splay"]}},
+      "r_jetting": {"result": {"primary": "jetting", "also": ["gate_blush"]}},
+      "r_gate_blush": {"result": {"primary": "gate_blush", "also": ["jetting"]}},
+      "r_flow_lines": {"result": {"primary": "flow_lines", "also": ["weld_lines"]}},
+      "r_weld": {"result": {"primary": "weld_lines", "also": ["flow_lines"]}},
+      "r_gloss": {"result": {"primary": "gloss_variation"}},
+      "r_delam": {"result": {"primary": "delamination", "also": ["color_streaks"]}},
+      "r_color": {"result": {"primary": "color_streaks", "also": ["delamination"]}},
+      "r_brittle": {"result": {"primary": "brittleness", "also": ["weld_lines", "delamination"]}},
+      "r_cracking": {"result": {"primary": "cracking", "also": ["sticking", "ejector_marks"]}},
+      "r_stringing": {"result": {"primary": "stringing", "also": ["drooling"]}},
+      "r_drooling": {"result": {"primary": "drooling", "also": ["stringing"]}},
+      "r_sticking": {"result": {"primary": "sticking", "also": ["ejector_marks"]}},
+      "r_ejector": {"result": {"primary": "ejector_marks", "also": ["sticking"]}},
+      "r_dim_drift": {"result": {"primary": "dimensional_drift", "also": ["warpage", "sink_marks"]}},
+      "r_black_specks": {"result": {"primary": "black_specks", "also": ["color_streaks"]}},
+      "r_unmelts": {"result": {"primary": "unmelts", "also": ["black_specks"]}}
+    }
+  }
+}

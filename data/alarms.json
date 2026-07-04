@@ -1,0 +1,162 @@
+{
+  "alarms": [
+    {
+      "id": "mold_protect_trip",
+      "name": "Mold Protect Trip",
+      "whatTriggers": "The mold hit resistance inside the low-pressure protect window and couldn't reach clamp-up within the allowed force/time. The machine stopped instead of crushing whatever is in there.",
+      "safeFirstResponse": "STOP. Do not raise protect pressure to push through. Open the mold and physically inspect BOTH faces — look for a hung part, runner, cold slug, or a lifted insert/pin.",
+      "rootCauses": [
+        "Part or runner left hanging after ejection (the #1 cause) — watch a full ejection with your own eyes; see Sticking",
+        "Cold slug or flash debris on a mold face",
+        "Protect window mis-set after a mold change — start position below the tallest possible hang-up, or pressure set too low for this tool's normal drag",
+        "Sprue picker / robot missed its grab",
+        "Mechanical: tight leader pins, low lube, platen parallelism"
+      ],
+      "prevention": "After every mold change, re-verify: protect start just above the tallest possible obstruction, lowest pressure that closes an empty mold reliably. Fix ejection reliability instead of numbing the protection.",
+      "relatedSettings": ["mold_protect", "ejector_stroke", "ejector_count_delay", "mold_close_profile"],
+      "relatedDefects": ["sticking"]
+    },
+    {
+      "id": "dose_not_complete",
+      "name": "Dose Not Complete",
+      "whatTriggers": "The screw failed to reach the dose position within the allowed time — the next shot never got fully prepared.",
+      "safeFirstResponse": "Check material supply first: hopper level, loader running, slide gate open. It's embarrassing how often this alarm means 'empty hopper.'",
+      "rootCauses": [
+        "No/low material: hopper empty, loader fault, slide gate closed",
+        "Bridging in the feed throat — throat running warm; pellets sticking together above the screw",
+        "Back pressure too high or RPM too low for the required recovery",
+        "Worn screw/barrel or leaking check ring — screw spins but doesn't convey",
+        "Material issue: high regrind fines, oversize regrind, blended contaminant"
+      ],
+      "prevention": "Trend Dose Time — it stretches for hours before this alarm fires. Keep throat cooling verified on the startup checklist.",
+      "relatedSettings": ["feed_throat_temp", "back_pressure", "screw_rpm", "dose_position"],
+      "relatedDefects": ["short_shot", "unmelts"]
+    },
+    {
+      "id": "cushion_alarm",
+      "name": "Minimum Cushion Alarm",
+      "whatTriggers": "Min Cushion fell below its monitored limit — the screw is running out of melt before packing finished.",
+      "safeFirstResponse": "Check the last parts for shorts/sinks, then look at the cushion trend: sudden drop or slow bleed?",
+      "rootCauses": [
+        "Check ring leaking — the classic; cushion wanders then collapses (run Flow-Check / static leak test)",
+        "Shot size too small for the part + cushion (raise Dose Position)",
+        "V-P transfer moved later, eating the reserve",
+        "Melt got thinner (hotter/wetter) so more material packs in before the screw bottoms",
+        "New mold/cavity condition taking more material (e.g., vent/flash path opened)"
+      ],
+      "prevention": "Give yourself a real cushion (not fractions of a mm) and monitor it — cushion is the canary for check-ring health.",
+      "relatedSettings": ["dose_position", "vp_transfer_position", "flow_check"],
+      "relatedDefects": ["short_shot", "sink_marks", "dimensional_drift"]
+    },
+    {
+      "id": "fill_watchdog_alarm",
+      "name": "Fill Time / Pressure Limit Alarm",
+      "whatTriggers": "Fill exceeded the Fill Time Limit, or injection pressure hit the Maximum Filling Pressure hard enough to stall progress — the shot couldn't get in.",
+      "safeFirstResponse": "Don't just widen the limit. Check the obvious blockers: material in the barrel? Nozzle frozen? Gate blocked by a cold slug?",
+      "rootCauses": [
+        "Nozzle freeze-off or cold slug blocking the tip (nozzle temp / suck back balance)",
+        "Empty barrel — see Dose Not Complete upstream",
+        "Genuine viscosity jump: cold melt, wrong material loaded, dryer down",
+        "Pressure limit set with no headroom — normal variation now clips it",
+        "Check ring failed — screw moves but melt goes backward"
+      ],
+      "prevention": "Keep 10-20% headroom between Fill Peak and the pressure limit; trend Fill Time so drift is caught before the alarm.",
+      "relatedSettings": ["fill_pressure_limit", "fill_time_limit", "nozzle_temp", "pull_back_after_dose"],
+      "relatedDefects": ["short_shot"]
+    },
+    {
+      "id": "heater_deviation",
+      "name": "Heater Deviation / Thermocouple Fault",
+      "whatTriggers": "A temperature zone drifted outside its allowed band, or its sensor reads open/erratic.",
+      "safeFirstResponse": "Identify WHICH zone and WHICH direction. A zone stuck HIGH (possible stuck-on relay) is a runaway risk — get maintenance/supervision involved; don't just acknowledge and keep molding.",
+      "rootCauses": [
+        "Thermocouple loose, damaged, or unplugged (reads low or erratic → zone overheats trying to chase it)",
+        "Heater band burned out or connector failed (zone can't reach setpoint)",
+        "Solid-state relay stuck ON (zone climbs past setpoint — the dangerous one) or stuck OFF",
+        "Band loose on the barrel — poor contact, slow lying readings"
+      ],
+      "prevention": "Degraded material and splay often show up before the alarm — a zone that 'takes forever to heat' is a heater on its way out.",
+      "relatedSettings": ["barrel_temps", "nozzle_temp"],
+      "relatedDefects": ["splay", "black_specks", "unmelts", "short_shot"]
+    },
+    {
+      "id": "torque_overload",
+      "name": "Servo Torque Overload (Dose / Injection Axis)",
+      "whatTriggers": "A servo axis (usually screw rotation) exceeded its torque limit — the all-electric equivalent of a hydraulic relief blowing.",
+      "safeFirstResponse": "Do NOT keep retrying rotation. Verify every barrel zone is AT setpoint and has soaked 10-15+ minutes. Rotating a screw in half-melted plastic is how screws snap.",
+      "rootCauses": [
+        "Cold start / insufficient heat soak (the classic — and the expensive one)",
+        "Foreign object in the feed (metal, oversize regrind) jamming the flights",
+        "Back pressure set excessively high for the material",
+        "Very stiff/filled resin with rear zones too cold",
+        "Mechanical: drive/bearing problem (persistent overloads at temp)"
+      ],
+      "prevention": "Enforce a soak timer after heats reach setpoint. Magnet in the feed path if regrind is in play.",
+      "relatedSettings": ["barrel_temps", "back_pressure", "screw_rpm"],
+      "relatedDefects": ["unmelts", "black_specks"]
+    },
+    {
+      "id": "clamp_correction_fault",
+      "name": "Clamp Force Correction Fault",
+      "whatTriggers": "The auto tonnage correction system can't reach or hold the set clamp force within its adjustment range.",
+      "safeFirstResponse": "Check for anything physically between the platens and confirm the mold is seated/bolted correctly before re-homing anything.",
+      "rootCauses": [
+        "Mold-height setup off after a mold change (correction runs out of travel)",
+        "Large thermal swing pushed the toggle outside the correction window",
+        "Tie-bar strain unbalanced — parallelism, uneven mold, or a bent issue (check CF1-CF4 spread)",
+        "Lubrication / mechanical drag in the toggle",
+        "Load-cell or sensor fault"
+      ],
+      "prevention": "Re-run mold height setup on every change; watch the CF1-CF4 per-tie-bar values for balance — big spread is a mechanical warning.",
+      "relatedSettings": ["auto_clamp_correction", "clamp_force"],
+      "relatedDefects": ["flash", "dimensional_drift"]
+    },
+    {
+      "id": "safety_interlock",
+      "name": "Safety Door / Purge Guard Interlock",
+      "whatTriggers": "A guarded door or purge shield is open or its switch isn't satisfied — motion is locked out.",
+      "safeFirstResponse": "It's doing its job. Close/verify the guard. NEVER bypass, jumper, or tape a safety switch — molten plastic and clamp motion are the two things on this machine that maim.",
+      "rootCauses": [
+        "Door not fully closed / slammed out of alignment",
+        "Switch or actuator misaligned, worn, or damaged",
+        "Purge guard open from the last purge",
+        "Wiring/connector fault on the interlock circuit (maintenance)"
+      ],
+      "prevention": "Report sticky or misaligned guards immediately — a guard people fight with is a guard someone will eventually defeat.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "ejector_fault",
+      "name": "Ejector Fault (Position / Return)",
+      "whatTriggers": "The ejector plate didn't reach its commanded position or didn't confirm return before the mold was allowed to close.",
+      "safeFirstResponse": "Inspect the mold: a jammed part or broken pin can be holding the plate. Confirm the plate is fully back before any close attempt.",
+      "rootCauses": [
+        "Part jammed in the ejection path",
+        "Return confirmation (limit/proximity) switch misadjusted or failed",
+        "Ejector settings asking for travel the mold doesn't have (stroke past mechanical stop)",
+        "Broken/bent pin or return spring binding the plate",
+        "Speed/pressure too low to overcome release force (see Sticking)"
+      ],
+      "prevention": "After mold changes, verify ejector stroke against the tool's actual travel before running auto.",
+      "relatedSettings": ["ejector_stroke", "ejector_speed_pressure", "ejector_count_delay"],
+      "relatedDefects": ["sticking", "ejector_marks"]
+    },
+    {
+      "id": "nozzle_clog",
+      "name": "Nozzle Freeze-Off / Clog",
+      "whatTriggers": "Melt can't get through the nozzle — fill stalls immediately, pressure spikes at zero progress, or purging produces nothing.",
+      "safeFirstResponse": "Treat a blocked, heated nozzle as pressurized. Follow safe purge procedure — shields down, nobody in line with the nozzle, never look into or probe a hot nozzle from the front.",
+      "rootCauses": [
+        "Nozzle temp too low or its heater failed — tip frozen against the cold sprue bushing",
+        "Excessive suck back pulled cold material into the tip which then froze",
+        "Foreign object or char lodged in the tip orifice",
+        "Long idle at temperature let the tip drain/set up",
+        "Wrong tip orifice vs sprue bushing (chronic version)"
+      ],
+      "prevention": "Balance nozzle temp with suck back rather than maxing either; on shutdowns, purge and back the carriage off the bushing.",
+      "relatedSettings": ["nozzle_temp", "pull_back_after_dose"],
+      "relatedDefects": ["short_shot", "jetting", "drooling"]
+    }
+  ]
+}

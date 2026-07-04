@@ -1,0 +1,46 @@
+{
+  "guides": [
+    {
+      "id": "decoupled_molding",
+      "name": "Decoupled Molding in Plain Language",
+      "minutes": 3,
+      "body": "The whole modern method fits in one sentence: fill fast under velocity control, switch to pressure control when the part is nearly full, and let hold pressure finish and pack it.\n\nWhy split it? Because fill and pack want opposite things. Fill wants speed — a fast flow front stays hot, shear-thins the melt, and reaches the end before freezing. Pack wants controlled force — gently finishing the last few percent and squeezing in extra material as the part shrinks.\n\nThe machine does this with two control modes. During FILL, it holds your set velocity and uses whatever pressure that takes (up to the limit) — pressure is the output, speed is the input. At the V-P transfer position it flips: now PRESSURE is the input, and the screw moves however it must to hold it.\n\nEverything on the Plast screen belongs to one side of that line. Velocities, stage positions, pressure limit, fill time: the fill side. Hold pressure, hold time, H.V. limit: the pack side. V-P transfer is the border between them, and cushion is proof the pack side still had material to work with.\n\nWhen troubleshooting, first ask: is this a FILL problem (short, burn, jetting, weld) or a PACK problem (sink, void, flash at transfer, dimensions)? Half the battle is knowing which side of the transfer you're on."
+    },
+    {
+      "id": "fill_only_study",
+      "name": "The Fill-Only Study (Setting V-P Transfer)",
+      "minutes": 4,
+      "body": "Goal: prove the cavity is about 95-98% full at transfer, filled by velocity — not by luck.\n\nHow: 1) Safety and scrap awareness first — you will make intentional shorts. 2) Set hold pressure to (near) zero and hold time minimal, so the part shows ONLY what fill delivered. 3) Mold a shot. The part should come out short. 4) Adjust the V-P transfer position until the fill-only part is just barely short — around 95-98% full by eye/weight. Lower the position number to fill more, raise it to fill less. 5) Restore hold pressure and time. Hold now finishes the last few percent and packs.\n\nWhy it matters: if velocity fills 100%+ of the part, every viscosity wiggle becomes flash and pressure spikes. If velocity fills 85%, hold pressure is doing fill's job slowly and inconsistently — sinks and dimensional scatter follow.\n\nWhile you're there, run the viscosity curve: fill-only shots across a range of speeds, note Fill Peak and Fill Time at each. Plot effective viscosity (pressure x time, roughly) versus speed. Pick a speed on the flat part of the curve — there, normal variation barely changes how the material flows, and your process is robust by design."
+    },
+    {
+      "id": "gate_seal_study",
+      "name": "The Gate Seal Study (Setting Hold Time)",
+      "minutes": 3,
+      "body": "Hold pressure only works while the gate is open. The gate-seal study finds the moment it freezes shut — after that, hold time is pure wasted cycle.\n\nHow: 1) Set hold time clearly short (say 1 second). 2) Mold 3-5 shots, weigh the parts, average. 3) Add 0.5s and repeat. 4) Keep stepping. Part weight climbs while the gate is open, then flattens — that plateau is gate seal. 5) Set production hold time just past the plateau (a small margin).\n\nReading it: weight still climbing at your current hold time means you've been discharging pack back out through an open gate — that's sink marks, voids, and weight scatter you were paying for. Weight flat well before your hold time means free cycle time to claim.\n\nRemember: gate seal moves when melt temp, mold temp, or the gate itself changes. Re-verify after those, not just at setup."
+    },
+    {
+      "id": "cushion_explained",
+      "name": "Cushion: The Most Important Small Number",
+      "minutes": 3,
+      "body": "Cushion is the melt left in front of the screw when hold finishes — the screw did NOT bottom out. On your screen it's Min Cushion (4.81 mm in your photo).\n\nWhy it matters: hold pressure reaches the part THROUGH that melt. Screw bottomed = pressure pushes on steel, part gets nothing, and the last part of pack silently never happened. No cushion, no control.\n\nWhat its behavior tells you: A steady cushion is a healthy process. A wandering cushion is the classic worn check ring — melt slips backward past the ring differently every shot. A shrinking cushion means the shot is too small, transfer moved, or the melt thinned. Growing means viscosity rose or shot size crept.\n\nRules of thumb: keep a real cushion (a few mm, not fractions), never chase defects by letting it approach zero, and treat cushion repeatability as your #1 daily consistency check. When dimensions or weights scatter and nothing was 'changed,' look here first."
+    },
+    {
+      "id": "clamp_tonnage",
+      "name": "Clamp Tonnage: Enough, Not Extra",
+      "minutes": 3,
+      "body": "Clamp force must beat the force trying to blow the mold open: cavity pressure x projected part area. Old rule of thumb: 2-5 tons per square inch of projected area (part + runners as seen from the clamp direction), material and pack-aggression dependent.\n\nBut more is not safer. Excess tonnage crushes vent depth — and crushed vents cause burns and end-of-fill shorts, plus platen wear and wasted energy. The modern method: find the LOWEST tonnage that doesn't flash, add a small safety margin, run there.\n\nYour machine helps: it computes a minimum clamp value (your screen showed 14-15 TF against a 100 TF setpoint — a huge gap worth a trial), and Full Auto Clamp Force Correction holds the tonnage steady as the mold and toggle grow with heat, so morning and afternoon behave the same.\n\nWatch Peak Clamp on the Actual display: the amount it rises above setpoint during injection is the cavity pushing back. If that delta grows over time, your pack is getting hotter — address that before it becomes flash."
+    },
+    {
+      "id": "drying_moisture",
+      "name": "Drying & Moisture: The Silent Part-Killer",
+      "minutes": 4,
+      "body": "Hygroscopic resins (PC, nylon/PA, PBT, PET, ABS to a degree) pull moisture INTO the pellet from the air. You cannot see it, feel it, or shake it off — only proper drying removes it.\n\nAt melt temperature, that water does two things. Cosmetically: it flashes to steam and drags silver streaks (splay) across the surface. Structurally — and this is the one people miss — in PC, PA, and PBT it chemically cuts the polymer chains (hydrolysis). Those parts are permanently brittle even when they LOOK perfect. You cannot re-mold your way out; the damage happened in the barrel.\n\nDrying has three legs, and all three must be true: temperature (per datasheet), TIME at temperature (residence in the dryer, typically 2-6 hours — a hopper topped up an hour ago is not dry), and dewpoint (a desiccant dryer around -40; a hot-air hair-dryer setup does not dry hygroscopic resin).\n\nWhen splay or brittleness appears, verify drying with your own eyes before touching one machine setting: dewpoint reading, hopper level history, dryer temp at the hopper (not just the display), and no open bags feeding the loader."
+    },
+    {
+      "id": "residence_time",
+      "name": "Residence Time: How Long Melt Sits in the Barrel",
+      "minutes": 3,
+      "body": "Residence time is how long a pellet spends between entering the feed throat and leaving the nozzle. Too long at melt temperature and even tough resins degrade: splay, black specks, brittleness, yellowing.\n\nQuick estimate: barrel capacity divided by shot size, times cycle time. Example: a shot that's 10% of barrel capacity on a 30-second cycle means material sits roughly 10 cycles = about 5 minutes in the heat. Fine for PP; risky for POM or a flame-retardant grade.\n\nRules of thumb: shots below ~20% of barrel capacity deserve attention (small part on a big machine = long, hot residence — consider lower barrel temps, especially rear zones); shots above ~65-70% risk unmelts (not enough time to fully melt). Heat-sensitive materials want the middle of that window and modest temperatures.\n\nLevers on this machine: barrel temps (down for long residence), dose delay (prepares melt later so it sits less after dosing), interval discipline (semi-auto pauses cook the barrel contents), and honest cycle time. And when a machine sits idle hot: purge before restarting production — the first shots are the oldest, most abused material in the building."
+    }
+  ]
+}
