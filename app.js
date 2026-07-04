@@ -91,7 +91,6 @@
       ghead("Sections") +
       '<div class="stack">' +
         homeCard("settings", "Settings Encyclopedia", "Every setting: what it is, raise vs lower, cautions", DB.settings.length) +
-        homeCard("actuals", "Actual Values", "What the monitored numbers mean and what drift tells you", DB.actuals.length) +
         homeCard("defects", "Defect Library", "Symptom \u2192 ranked causes \u2192 exact setting fixes", DB.defects.length) +
         homeCard("alarms", "Alarms &amp; Faults", "What tripped, safe first response, root causes", DB.alarms.length) +
         homeCard("guides", "Fundamentals", "Short reads: decoupled molding, studies, cushion, drying", DB.guides.length) +
@@ -296,7 +295,6 @@
     DB.settings.forEach(function (x) { INDEX.push(ix("setting", x.id, x.name, x.screen + " \u00b7 " + x.group, [x.name, (x.alsoCalled || []).join(" "), x.whatItIs, x.units])); });
     DB.defects.forEach(function (x) { INDEX.push(ix("defect", x.id, x.name, x.category, [x.name, x.description, x.category])); });
     DB.alarms.forEach(function (x) { INDEX.push(ix("alarm", x.id, x.name, "Alarm", [x.name, x.whatTriggers])); });
-    DB.actuals.forEach(function (x) { INDEX.push(ix("actual", x.id, x.name, "Actual \u00b7 " + x.yourScreen, [x.name, x.whatItTells])); });
     DB.guides.forEach(function (x) { INDEX.push(ix("guide", x.id, x.name, x.minutes + " min read", [x.name, x.body])); });
   }
   function ix(kind, id, name, sub, hayParts) {
@@ -323,10 +321,10 @@
       '<div id="sr">' + resultsHtml(q) + "</div>";
   }
   function resultsHtml(query) {
-    if (!query.trim()) return '<div class="hint" style="margin-top:14px">Search across ' + INDEX.length + " entries: settings, actuals, defects, alarms, and guides.</div>";
+    if (!query.trim()) return '<div class="hint" style="margin-top:14px">Search across ' + INDEX.length + " entries: settings, defects, alarms, and guides.</div>";
     var res = doSearch(query);
     if (!res || !res.length) return '<div class="empty">Nothing found for &ldquo;' + esc(query) + '&rdquo;. Try one word.</div>';
-    var order = ["setting", "defect", "alarm", "actual", "guide"];
+    var order = ["setting", "defect", "alarm", "guide"];
     return order.map(function (k) {
       var of = res.filter(function (r) { return r.kind === k; }).slice(0, 6);
       if (!of.length) return "";
@@ -341,7 +339,7 @@
 
   /* ---------- router ---------- */
   var TABS = [
-    ["settings", "Settings"], ["actuals", "Actuals"], ["defects", "Defects"], ["alarms", "Alarms"], ["guides", "Guides"]
+    ["settings", "Settings"], ["defects", "Defects"], ["alarms", "Alarms"], ["guides", "Guides"]
   ];
   function parse() {
     var h = location.hash.replace(/^#\/?/, "");
