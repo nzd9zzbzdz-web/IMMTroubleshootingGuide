@@ -157,6 +157,222 @@
       "prevention": "Balance nozzle temp with suck back rather than maxing either; on shutdowns, purge and back the carriage off the bushing.",
       "relatedSettings": ["nozzle_temp", "pull_back_after_dose"],
       "relatedDefects": ["short_shot", "jetting", "drooling"]
+    },
+    {
+      "id": "robot_wait_mold_open",
+      "name": "Robot Waiting on Mold Open (No Descent)",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "The robot is paused at the top of its stroke and never enters the mold. It hasn't received (or doesn't trust) the mold-fully-open signal from the press, so descent is not permitted.",
+      "safeFirstResponse": "Don't reach in or jog the arm down manually. Check the press side first: did the mold actually reach its full-open position, or did it stop short? The robot refusing to descend is usually the press not finishing, not the robot failing.",
+      "rootCauses": [
+        "Mold open stroke ends short of the position the robot was taught to expect — open position changed after a mold change",
+        "Mold-open limit / confirmation signal not reaching the robot (interface cable, relay, or signal assignment)",
+        "Robot descent-permit conditions not met — a previous cycle fault latched and needs a reset",
+        "Press stopped mid-open on its own alarm — clear the press alarm first",
+        "Robot in a mode that blocks auto descent (step mode, teach mode left active)"
+      ],
+      "prevention": "After any mold change or open-stroke adjustment, confirm the robot descent position was re-verified against the new open position before running auto.",
+      "relatedSettings": ["mold_protect"],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_vacuum_fault",
+      "name": "Vacuum Confirmation Fault (Pickup Not Confirmed)",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "The arm went in for the part, but the vacuum switch never confirmed a sealed grip within the allowed time — the robot doesn't believe it's holding the part.",
+      "safeFirstResponse": "Stop and look in the mold before resuming: is the part still on the core, half-ejected, or already dropped loose in the mold area? A loose part in the mold plus an auto restart is how platens get smashed. Remove any loose part first.",
+      "rootCauses": [
+        "Part not presented where the EOAT expects it — ejection short, slow, or part sticking (see Sticking)",
+        "Vacuum cup worn, split, or folded over — won't seal against the part surface",
+        "Vacuum switch threshold set too tight, or switch drifted — grip is real but never 'confirms'",
+        "Supply problem: low air pressure to the venturi, kinked or popped-off vacuum line",
+        "EOAT position drifted (loose mounting, crash earlier in the shift) so cups land off the part"
+      ],
+      "prevention": "Make cup condition and EOAT bolt check part of the mold-change checklist; keep a spare cup set at the press. Fix ejection consistency rather than adding retry attempts.",
+      "relatedSettings": ["ejector_stroke", "ejector_count_delay"],
+      "relatedDefects": ["sticking"]
+    },
+    {
+      "id": "robot_chuck_fault",
+      "name": "Chuck / Runner Grip Confirmation Fault",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "A mechanical gripper (part chuck or runner grabber) closed but its confirmation sensor never made — the robot can't verify it actually caught anything.",
+      "safeFirstResponse": "Same rule as a vacuum fault: inspect the mold area for a loose part or runner before any restart. Then cycle the gripper by hand (in manual, arm clear of the mold) and watch whether the confirm sensor light comes on.",
+      "rootCauses": [
+        "Runner/part not in the expected position — sprue stuck in the bushing, runner hanging on a pin",
+        "Gripper closed on nothing (missed grab) because the taught position drifted",
+        "Confirm sensor (reed switch / proximity) loose, dead, or its cable damaged at a flex point",
+        "Low air pressure — gripper closes too slowly or without full force",
+        "Debris or flash packed into the gripper jaws"
+      ],
+      "prevention": "Check gripper sensors during weekly PM — wiggle the cables at the flex points; that's where they fail. Keep the sprue puller and runner geometry consistent so the grab point doesn't wander.",
+      "relatedSettings": [],
+      "relatedDefects": ["sticking"]
+    },
+    {
+      "id": "robot_part_drop",
+      "name": "Part Lost During Transfer (Drop Detected)",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "Vacuum or grip confirmation was lost mid-traverse — the robot picked the part, then dropped it somewhere between the mold and the release point.",
+      "safeFirstResponse": "Find the part before restarting. If it's not on the floor or the conveyor, assume it's inside the machine or on the safety guarding — a part lodged on the tie bars or platen edge will cause a crash or mold damage next cycle.",
+      "rootCauses": [
+        "Marginal grip from the start: worn cups, part gripped off-center, vacuum just above threshold",
+        "Traverse acceleration too aggressive for the part weight/grip — part peels off mid-move",
+        "Vacuum line rubbing/pinching at a flex point, losing vacuum only in certain arm positions",
+        "Part geometry or surface (texture, release spray) reducing seal quality",
+        "Air supply dip when other equipment on the same line cycles"
+      ],
+      "prevention": "Set vacuum confirm thresholds with margin above the drop point, and re-verify grip after any EOAT repair. If drops correlate with one arm position, inspect the vacuum line at that flex point.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_release_fault",
+      "name": "Release Confirmation Fault (Part Didn't Drop)",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "At the release position the robot opened the gripper / broke vacuum, but the part-present signal says the part is still on the EOAT.",
+      "safeFirstResponse": "Go look at the EOAT. Usually the part is genuinely stuck to a cup or hung on the gripper. Remove it by hand with the robot in manual and motion stopped — not while it's trying to retry.",
+      "rootCauses": [
+        "Part stuck to a vacuum cup (static, tacky material, release blow-off not working)",
+        "Blow-off air not plumbed/firing at release, so nothing pushes the part off",
+        "Part hung on gripper jaw or EOAT frame edge",
+        "Part-present sensor stuck or dirty — part actually released but sensor still reads 'present'",
+        "Release position over a full bin/conveyor backing parts up into the EOAT"
+      ],
+      "prevention": "Keep blow-off working and cups clean; check the part-present sensor face when this repeats. Watch for conveyor backups at the release station.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_interference",
+      "name": "Arm Not Clear / Mold Area Interference",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "The press is refusing to close (or the robot refuses to move) because the arm-clear signal says the robot is still inside the mold area. Press and robot are each waiting on the other.",
+      "safeFirstResponse": "Never bypass or jumper the mold-area-free signal to get the press moving — that interlock is the only thing preventing the mold from closing on the arm. Verify visually where the arm actually is, then recover in manual.",
+      "rootCauses": [
+        "Robot stopped mid-cycle (fault, e-stop) while physically inside the mold area — needs manual recovery to a safe position first",
+        "Arm-up / arm-clear confirmation sensor failed or misadjusted, so a genuinely clear arm never reports clear",
+        "Taught retract position doesn't fully satisfy the clear-zone sensor after a program edit",
+        "Interface signal issue between robot and press (cable, connector, relay)",
+        "Wrong program selected for this mold — arm path enters zones the press doesn't expect"
+      ],
+      "prevention": "After any program edit or crash, verify arm-clear confirmation triggers at the retract position before running auto. Treat any 'works if I jiggle it' interface cable as an immediate replacement.",
+      "relatedSettings": ["mold_protect", "mold_close_profile"],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_origin_fault",
+      "name": "Home / Origin Return Not Complete",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "The robot doesn't know where its axes are — after a power cycle, e-stop, or crash it requires an origin (home) return before it will run, and that return didn't complete.",
+      "safeFirstResponse": "Before commanding home, look at the whole travel path: homing moves axes to their reference ends, and if the arm is inside the mold or the EOAT is tangled with anything, homing will drag it. Clear the path, then home.",
+      "rootCauses": [
+        "Arm physically obstructed along the homing path (inside mold, against guarding, cable snag)",
+        "Home/reference sensor dirty, loose, or dead — axis moves but never sees its reference",
+        "E-stop or safety circuit still open, blocking motion entirely",
+        "Axis brake not releasing (vertical axis) — common after long idle",
+        "Encoder/battery issue on absolute-encoder models: position memory lost and axis needs re-referencing per the manual"
+      ],
+      "prevention": "Power down the robot properly (not mid-motion), and address encoder battery warnings promptly instead of clearing them — they end as a no-home condition at the worst time.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_overtravel",
+      "name": "Axis Overtravel / Limit Fault",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "An axis ran past its allowed travel and hit a limit switch or software limit — the robot stopped to protect itself.",
+      "safeFirstResponse": "Don't just reset and rerun the same program. An overtravel in auto means a taught position or offset is wrong, something slipped, or the robot was jogged there manually — find which before resuming.",
+      "rootCauses": [
+        "Taught point edited beyond the axis range (or with the wrong sign) in a recent program change",
+        "Wrong program for the mold on the press — positions valid for a different setup",
+        "Mechanical slip: loose coupling or belt letting the actual position drift from the encoder's belief",
+        "Manually jogged into the limit during teaching or recovery",
+        "Limit switch itself loose or failing, tripping early"
+      ],
+      "prevention": "Verify edited positions by single-stepping the program at low speed before auto. Keep program names tied clearly to mold numbers so the wrong-program mistake is hard to make.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_servo_alarm",
+      "name": "Servo Axis Alarm (Overload / Encoder)",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "A servo drive tripped on overload, overcurrent, deviation (position error), or an encoder fault — the drive shut the axis down to protect the motor.",
+      "safeFirstResponse": "One reset attempt is diagnostic; repeated resets are abuse. If it trips again, note the exact alarm number from the pendant — servo alarm codes are specific and the manual's code table will name the actual failure.",
+      "rootCauses": [
+        "Mechanical binding raising the load: dry linear rails, damaged bearing, crash debris in the track",
+        "Overload from carrying more than the axis is rated for at the set speeds/accelerations",
+        "Deviation error: axis commanded but obstructed — it fell behind where it should be",
+        "Encoder cable damage at a flex point (intermittent position feedback)",
+        "Drive/motor genuinely failing — usually preceded by weeks of occasional trips"
+      ],
+      "prevention": "Keep rails lubed per the PM schedule and log every servo alarm with its code and axis — the pattern (same axis, same move) is what separates mechanical binding from electrical failure.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_air_low",
+      "name": "Low Air Pressure",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "Supply air to the robot fell below its minimum. Everything pneumatic — vacuum venturis, grippers, blow-off, some brakes — becomes unreliable, so the robot stops rather than gamble.",
+      "safeFirstResponse": "Check the robot's own regulator/gauge first, then work upstream: is it just this drop, this line, or the whole shop header? A part held only by marginal vacuum may drop when you restore motion — clear the area under the arm.",
+      "rootCauses": [
+        "Shop air dip — compressor cycling, dryer down, or a big consumer starting up on the same header",
+        "Regulator on the robot drifted low or its filter bowl is clogged",
+        "Leak on the robot: popped fitting, cut line at a flex point (audible hiss)",
+        "Isolation valve partially closed after maintenance",
+        "Pressure switch itself drifted — pressure is fine but the switch reads low"
+      ],
+      "prevention": "Drain filter bowls and listen for new leaks during weekly PM. If the alarm coincides with another machine's cycle, the header is undersized or a line is restricted — fix the supply, don't lower the switch threshold.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_estop",
+      "name": "Emergency Stop / Safety Circuit Open",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "An e-stop or safety circuit in the robot/press cell opened — robot e-stop button, press e-stop, safety gate, or the interface between them. All motion is cut until the whole chain is closed and reset.",
+      "safeFirstResponse": "Find out WHY it was hit before resetting — walk the cell. If you didn't press it and no one owns up, treat it as a real event (someone saw something), not a nuisance.",
+      "rootCauses": [
+        "Someone pressed an e-stop — robot pendant, press panel, or cell button",
+        "Safety gate/door opened while in auto",
+        "E-stop chain between press and robot broken: interface cable, connector, safety relay",
+        "A button physically stuck/twisted in the latched position",
+        "Safety relay or door switch failing intermittently — the 'ghost' e-stop that needs tracing, not resetting"
+      ],
+      "prevention": "Label every e-stop in the cell and test each one on a schedule. Intermittent safety-circuit drops are a wiring fault to be traced with the print — never bridged.",
+      "relatedSettings": [],
+      "relatedDefects": []
+    },
+    {
+      "id": "robot_takeout_timeout",
+      "name": "Take-Out Not Complete / Press Waiting on Robot",
+      "group": "robot",
+      "draft": true,
+      "whatTriggers": "The robot didn't finish its take-out sequence within the allowed window, so the press is sitting open, waiting. Cycle time is bleeding away even if no hard fault shows.",
+      "safeFirstResponse": "Watch one full cycle from a safe spot and find where the robot hesitates — waiting at descent, slow confirm at pickup, retries at release. The pause location tells you which fault above is brewing.",
+      "rootCauses": [
+        "Marginal vacuum/grip confirmation taking multiple attempts before succeeding",
+        "Robot speed/acceleration turned down during earlier troubleshooting and never restored",
+        "Ejection presenting the part inconsistently — robot waits or retries (see Sticking)",
+        "Downstream backup: conveyor full, box change, degating station jammed — robot waits to release",
+        "Interlock signal slow or intermittent (mold-open confirm, ejector-permit handshake)"
+      ],
+      "prevention": "Know your normal robot-in-mold time and total cycle; trend it like Cycle Time. A creeping take-out time is an early warning you get for free.",
+      "relatedSettings": ["ejector_stroke", "ejector_count_delay"],
+      "relatedDefects": ["sticking"]
     }
   ]
 }

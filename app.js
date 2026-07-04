@@ -216,18 +216,28 @@
   }
 
   function pageAlarms() {
-    return '<h1 class="pg">Alarms &amp; Faults</h1>' +
+    function rows(list) {
+      return '<div class="stack">' +
+        list.map(function (a) { return listRow("#/alarm/" + a.id, a.name, a.whatTriggers.slice(0, 74) + "\u2026"); }).join("") +
+        "</div>";
+    }
+    var machine = DB.alarms.filter(function (a) { return a.group !== "robot"; });
+    var robot = DB.alarms.filter(function (a) { return a.group === "robot"; });
+    var h = '<h1 class="pg">Alarms &amp; Faults</h1>' +
       '<p class="lead dim">What tripped, what to do first without making it worse, then the real causes.</p>' +
-      '<div style="height:14px"></div><div class="stack">' +
-      DB.alarms.map(function (a) { return listRow("#/alarm/" + a.id, a.name, a.whatTriggers.slice(0, 74) + "\u2026"); }).join("") +
-      "</div>";
+      ghead("Machine \u2014 SE180EV") + rows(machine);
+    if (robot.length) {
+      h += ghead("Take-out robot \u2014 Yushin", "General drafts \u2014 to be matched to your robot\u2019s actual fault names and codes.") + rows(robot);
+    }
+    return h;
   }
 
   function pageAlarm(id) {
     var a = AL[id];
     if (!a) return notFound();
-    var h = '<span class="eyebrow">Alarm / fault</span><h1 class="pg">' + esc(a.name) + "</h1>" +
+    var h = '<span class="eyebrow">' + (a.group === "robot" ? "Robot fault" : "Alarm / fault") + '</span><h1 class="pg">' + esc(a.name) + "</h1>" +
       '<p class="lead">' + esc(a.whatTriggers) + "</p>" +
+      (a.draft ? callout("co-amber", "Draft — verify on your robot", "<div>Written from general take-out robot practice, not yet matched to this cell’s actual fault names and codes. Confirm against the Yushin pendant / manual.</div>") : "") +
       callout("co-warn", "Safe first response", "<div>" + esc(a.safeFirstResponse) + "</div>") +
       '<div class="sect"><span class="eyebrow">Root causes &mdash; most likely first</span><ol class="steps">' +
       a.rootCauses.map(function (r) { return "<li>" + esc(r) + "</li>"; }).join("") + "</ol></div>" +
@@ -294,7 +304,7 @@
   function buildIndex() {
     DB.settings.forEach(function (x) { INDEX.push(ix("setting", x.id, x.name, x.screen + " \u00b7 " + x.group, [x.name, (x.alsoCalled || []).join(" "), x.whatItIs, x.units])); });
     DB.defects.forEach(function (x) { INDEX.push(ix("defect", x.id, x.name, x.category, [x.name, x.description, x.category])); });
-    DB.alarms.forEach(function (x) { INDEX.push(ix("alarm", x.id, x.name, "Alarm", [x.name, x.whatTriggers])); });
+    DB.alarms.forEach(function (x) { INDEX.push(ix("alarm", x.id, x.name, x.group === "robot" ? "Robot fault" : "Alarm", [x.name, x.whatTriggers])); });
     DB.actuals.forEach(function (x) { INDEX.push(ix("actual", x.id, x.name, "Actual value", [x.name, x.whatItTells])); });
     DB.guides.forEach(function (x) { INDEX.push(ix("guide", x.id, x.name, x.minutes + " min read", [x.name, x.body])); });
   }
